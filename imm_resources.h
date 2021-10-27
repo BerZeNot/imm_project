@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #define SUCCESS 0
+#define CANT_OPEN_FILE -1
 
 int open(char const *filename);
 

@@ -1,7 +1,24 @@
 #include "imm_resources.h"
 
 int open(char const *filename){
-    printf("Filename: %s\n", filename);
+    // printf("Filename: %s\n", filename);
+    FILE *fp;
+    fp = fopen(filename, "r");
+    if(fp == NULL){
+        fclose(fp);
+        return CANT_OPEN_FILE;
+    }
+    char pixelValue[255];
+    int cont = 0; // é incrementado até 3 para ignorar as 3 primeiras strings do arquivo.
+    while(!feof(fp)){
+        fscanf(fp,"%s", pixelValue);
+        if(cont < 3){ // Se o valor do contador for menor que 3, o laço não vai ler a string
+            cont++;   // isso vai fazer com que ele ignore as strings de informação da imagem e 
+            continue; // imprima apenas os valores dos pixels da imagem.
+        } else
+            printf("%s ",pixelValue);
+    }
+    fclose(fp);
     return SUCCESS;
 }
 
