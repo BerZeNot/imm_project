@@ -32,8 +32,43 @@ int open(char const *filename){
 }
 
 int convert(char const *filename, char const *outfile_name){
-    printf("Filename: %s\n", filename);
-    printf("Outfile name: %s\n", outfile_name);
+    FILE *inFile, *outFile;
+    inFile = fopen(filename, "r");
+    if(inFile == NULL)
+        return CANT_OPEN_FILE;
+    
+    outFile = fopen(outfile_name, "wb");
+    if(outFile == NULL)
+        return CANT_CREATE_FILE;
+    
+    char imageHeader[3];
+    int pixelValue, imageWidth, imageHeight, maxColorValue;
+    fscanf(inFile, "%s", imageHeader); // Lê o dado da primeira linha da imagem de entrada
+    fprintf(outFile, "%s\n", imageHeader); // Escreve no arquivo de saída
+    
+    fscanf(inFile, "%d", &imageWidth); // Lê a largura da imagem
+    fscanf(inFile, "%d", &imageHeight); // Lê a altura da imagem
+    fprintf(outFile, "%d %d\n", imageWidth, imageHeight); // Escreve a largura e altura da imagem no arquivo de saída
+    
+    fscanf(inFile, "%d", &maxColorValue ); // Lê o valor máximo que um píxel terá na imagem
+    fprintf(outFile, "%d\n", maxColorValue ); // Escreve no arquivo de saída o valor máximo que um píxel terá na imagem
+    
+    for(int i=0; i<imageHeight; i++){
+        for(int j = 0; j<imageWidth; j++){
+            fscanf(inFile, "%d", &pixelValue);
+            if(pixelValue < 10)
+                fprintf(outFile, "%d   ", pixelValue);
+            else if(pixelValue < 100)
+                fprintf(outFile, "%d  ", pixelValue);
+            else
+                fprintf(outFile, "%d ", pixelValue);
+        }
+        fprintf(outFile,"\n");
+    }
+
+    fclose(inFile);
+    fclose(outFile);
+
     return SUCCESS;
 }
 

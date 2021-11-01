@@ -13,7 +13,9 @@ int main(int argc, char const *argv[]){
     }
 
     else if(strcmp(argv[1], "-convert") == 0){
-        convert(argv[2], argv[3]);
+        int resposta;
+        resposta = convert(argv[2], argv[3]);
+        printf("Resposta: %d\n", resposta);
     }
     
     else if(strcmp(argv[1], "-segment") == 0){

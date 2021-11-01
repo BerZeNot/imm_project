@@ -2,6 +2,7 @@
 
 #define SUCCESS 0
 #define CANT_OPEN_FILE -1
+#define CANT_CREATE_FILE -2
 
 int open(char const *filename);
 
