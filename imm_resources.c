@@ -8,16 +8,25 @@ int open(char const *filename){
         fclose(fp);
         return CANT_OPEN_FILE;
     }
-    char pixelValue[255];
-    int cont = 0; // é incrementado até 3 para ignorar as 3 primeiras strings do arquivo.
-    while(!feof(fp)){
-        fscanf(fp,"%s", pixelValue);
-        if(cont < 3){ // Se o valor do contador for menor que 3, o laço não vai ler a string
-            cont++;   // isso vai fazer com que ele ignore as strings de informação da imagem e 
-            continue; // imprima apenas os valores dos pixels da imagem.
-        } else
-            printf("%s ",pixelValue);
+    char imageHeader[3];
+    int pixelValue, imageWidth, imageHeight, maxColorValue;
+    fscanf(fp, "%s", imageHeader); // Lê o dado da primeira linha da imagem
+    fscanf(fp, "%d", &imageWidth); // Lê a largura da imagem
+    fscanf(fp, "%d", &imageHeight); // Lê a altura da imagem
+    fscanf(fp, "%d", &maxColorValue ); // Lê o valor máximo que um píxel terá na imagem
+    for(int i=0; i<imageHeight; i++){
+        for(int j = 0; j<imageWidth; j++){
+            fscanf(fp, "%d", &pixelValue);
+            if(pixelValue < 10)
+                printf("%d   ", pixelValue);
+            else if(pixelValue < 100)
+                printf("%d  ", pixelValue);
+            else
+                printf("%d ", pixelValue);
+        }
+        printf("\n");
     }
+
     fclose(fp);
     return SUCCESS;
 }
