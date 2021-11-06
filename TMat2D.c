@@ -207,7 +207,7 @@ int mat2D_print_matrix(TMat2D *mat){
     for(int i=0; i<mat->nrows; i++){
         for(int j=0; j<mat->ncolumns; j++){
             int pos = j * mat->nrows + i;
-            printf("[%lf] ",mat->data[pos]);
+            printf("[%.0lf] ",mat->data[pos]);
         }
         printf("\n");
     }
