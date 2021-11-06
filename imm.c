@@ -2,6 +2,8 @@
 #include <string.h>
 #include "imm_resources.h"
 
+void getExtention(const char *fileName, int size, char *outVector);
+
 int main(int argc, char const *argv[]){
     if(argv[1] == NULL){
         printf("No command informed\n");
@@ -9,7 +11,29 @@ int main(int argc, char const *argv[]){
     }
 
     if(strcmp(argv[1], "-open") == 0){
-        open(argv[2]);
+
+        if(argv[2] == NULL){
+            printf("Inform the file name!\n");
+            return MISSING_FILENAME;
+        }
+
+        char extention[3];
+        getExtention(argv[2], strlen(argv[2]), extention);
+        
+        if(strcmp(extention, "imm") == 0)
+            openImm(argv[2]);
+
+        else if(strcmp(extention, "pgm") == 0)
+            openTxt(argv[2]);
+
+        else if(strcmp(extention, "txt") == 0)
+            openTxt(argv[2]);
+        
+        else{
+            printf("Format is not supported!\n");
+            printf("Try some file with extensions .txt, .pgm or .imm.\n");
+            return FORMAT_NOT_SUPPORTED;
+        }
     }
 
     else if(strcmp(argv[1], "-convert") == 0){
