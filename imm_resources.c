@@ -1,6 +1,7 @@
+#include <string.h>
+#include <stdlib.h>
 #include "imm_resources.h"
 #include "TMat2D.h"
-#include <string.h>
 
 
 // loads a file into a matrix;
@@ -10,6 +11,8 @@ int loadFile(FILE *fp, TMat2D **matrix, int nRows, int nCols);
 int writefile(char const *filename, TMat2D *matrixData, int nRows, int nCols);
 
 int getMatrixSize(char const *filename, int *ncols, int *nRows);
+
+int getMatrizSizeFromBin(FILE *fp, int *ncols, int *nRows);
 
 int openTxt(char const *filename){
     
@@ -88,8 +91,62 @@ int convert(char const *filename, char const *outfile_name){
 }
 
 int segment(char const *thr, char const *filename, char const *outfile_name){
+    // Converte o valor thr que veio como string para inteiro;
+    int thrInt = atoi(thr);
     
+    // Verifica qual é a extensão do arquivo
+    char fileType[3];
+    getExtention(filename, strlen(filename), fileType);
+    
+    // Numero de linhas e colunas do arquivo
+    int numberRows, numberCols;
+    
+    // Abre o arquivo
+    FILE *fp;
+    if(strcmp(fileType, "imm")==0){
+        fp = fopen(filename, "rb");
+        if(fp == NULL){
+            fclose(fp);
+            return CANT_OPEN_FILE;
+        }
+        getMatrizSizeFromBin(fp, &numberCols, &numberRows);
+    }
+    else if(strcmp(fileType, "txt")==0){
+        fp = fopen(filename, "r");
+        if(fp == NULL){
+            fclose(fp);
+            return CANT_OPEN_FILE;
+        }
+        getMatrixSize(filename, &numberCols, &numberRows);
+    } 
 
+    // Carrega os dados dele para uma matriz;   
+
+    TMat2D *inFileData;
+    loadFile(fp, &inFileData, numberRows, numberCols);
+
+    // Fecha o arquivo de entrada
+    fclose(fp);
+    return 0;
+    // Faz o thresholding dos dados na matriz
+    double pixelInMatrix;
+    for(int i=0; i<numberRows; i++){
+        for(int j=0; j<numberCols; j++){
+            mat2D_get_value(inFileData,i,j,&pixelInMatrix);
+            if(pixelInMatrix > (double)thrInt){
+                mat2D_set_value(inFileData,i,j,1.0);
+            }
+            else {
+                mat2D_set_value(inFileData,i,j,0.0);
+                printf("%lf ", pixelInMatrix);
+            }
+        }
+    }
+
+    // Escreve os dados da matriz no outfile
+     writefile(outfile_name, inFileData, numberRows, numberCols);
+     
+    // retorna sucesso
     return SUCCESS;
 }
 
@@ -105,7 +162,7 @@ int lab(char const *filename, char const *outfile_name){
     return SUCCESS;
 }
 
-
+// Pega a quantidade de colunas e linnhas de pixels da imagem texto
 int getMatrixSize(char const *filename, int *ncols, int *nRows){
     FILE *fp = fopen(filename,"r");
     if(fp == NULL){
@@ -125,6 +182,12 @@ int getMatrixSize(char const *filename, int *ncols, int *nRows){
     fclose(fp);
 }
 
+// Pega a quantidade de colunas e linnhas de pixels da imagem binária
+int getMatrizSizeFromBin(FILE *fp, int *ncols, int *nRows){
+    fread(nRows, sizeof(int), 1, fp);
+    fread(ncols, sizeof(int), 1, fp);
+}
+
 // Gets the 3 last characters from the file name
 void getExtention(const char *fileName, int size, char *outVector){
     for(int i = 1; i<=3; i++){
@@ -132,7 +195,7 @@ void getExtention(const char *fileName, int size, char *outVector){
     }
 }
 
-
+// exibe a ajuda do programa
 void help(){
     printf("<< Possible commands >>\n");
     printf("-open (./imm -open filename.txt) \n");
@@ -150,9 +213,9 @@ int loadFile(FILE *fp, TMat2D **inFileData, int nRows, int nCols){
     *inFileData = mat2D_create(nRows, nCols);
     if(inFileData == NULL)
         return CANT_OPEN_FILE;
-    
+        
     double pixelValue;
-
+    
     for(int i=0; i<nRows; i++){
         for(int j=0; j<nCols; j++){
             fscanf(fp, "%lf", &pixelValue);
@@ -166,7 +229,19 @@ int loadFile(FILE *fp, TMat2D **inFileData, int nRows, int nCols){
 
 // Writes data from a matrix to a file;
 int writefile(char const *filename, TMat2D *matrixData, int nRows, int nCols){
-    FILE *fp = fopen(filename, "wb");
+    char fileType[3];
+    getExtention(filename,strlen(filename),fileType);
+
+
+    // Abre o arquivo como binário ou como texto
+    FILE *fp;
+    if(strcmp(fileType, "imm")==0){
+        fp = fopen(filename, "wb");
+    }
+    else if(strcmp(fileType, "txt")==0){
+        fp = fopen(filename, "w");
+    }
+
     if(fp == NULL)
         return CANT_CREATE_FILE;
 
