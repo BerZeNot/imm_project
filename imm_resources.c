@@ -30,7 +30,33 @@ int openTxt(char const *filename){
 }
 
 int openImm(char const *filename){
-    printf("Open binary\n");
+    FILE *fp = fopen(filename, "rb");
+    if(fp == NULL){
+        fclose(fp);
+        return CANT_OPEN_FILE;
+    }
+    int nrows, ncols;
+
+    fread(&nrows,sizeof(int), 1, fp);
+    fread(&ncols,sizeof(int), 1, fp);
+    printf("Nrows: %d\nNcols: %d\n", nrows, ncols);
+
+
+    int pixel;
+    for(int i=0; i<nrows; i++){
+        for(int j=0; j<ncols; j++){
+            fread(&pixel, sizeof(int), 1, fp);
+            if(pixel < 10)
+                printf("%d   ", pixel);
+            else if(pixel < 100)
+                printf("%d  ", pixel);
+            else
+                printf("%d ", pixel);
+        }
+        printf("\n");
+    }
+
+    fclose(fp);
     return SUCCESS;
 }
 
@@ -63,44 +89,6 @@ int convert(char const *filename, char const *outfile_name){
 
 int segment(char const *thr, char const *filename, char const *outfile_name){
     
-    // Converte o valor thr que veio como string para inteiro;
-    int thrInt = ((int)thr[0]-48)*100 + ((int)thr[1]-48)*10 + ((int)thr[2]-48)*1;
-    
-    FILE *inFile, *outFile;
-    inFile = fopen(filename, "rb");
-    if(inFile == NULL)
-        return CANT_OPEN_FILE;
-    
-    outFile = fopen(outfile_name, "wb");
-    if(outFile == NULL)
-        return CANT_CREATE_FILE;
-    
-    char imageHeader[3];
-    int pixelValue, imageWidth, imageHeight, maxColorValue;
-    fscanf(inFile, "%s", imageHeader); // Lê o dado da primeira linha da imagem de entrada
-    fprintf(outFile, "%s\n", imageHeader); // Escreve no arquivo de saída
-    
-    fscanf(inFile, "%d", &imageWidth); // Lê a largura da imagem
-    fscanf(inFile, "%d", &imageHeight); // Lê a altura da imagem
-    fprintf(outFile, "%d %d\n", imageWidth, imageHeight); // Escreve a largura e altura da imagem no arquivo de saída
-    
-    fscanf(inFile, "%d", &maxColorValue ); // Lê o valor máximo que um píxel terá na imagem
-    fprintf(outFile, "%d\n", maxColorValue ); // Escreve no arquivo de saída o valor máximo que um píxel terá na imagem
-
-    for(int i=0; i<imageHeight; i++){
-        for(int j = 0; j<imageWidth; j++){
-            fscanf(inFile, "%d", &pixelValue);
-            if(pixelValue >= thrInt)
-                fprintf(outFile, "%d ", 255);
-            else
-                fprintf(outFile, "%d   ", 0);
-        }
-        fprintf(outFile,"\n");
-    }
-
-    fclose(inFile);
-    fclose(outFile);
-
 
     return SUCCESS;
 }
