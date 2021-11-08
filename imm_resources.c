@@ -9,7 +9,32 @@ int open(const char *filename){
     
     open_file(&fp, filename);
     
-    get_image_proportions(filename,&nCols, &nRows);
+    get_image_proportions(filename ,&nCols, &nRows);
+    
+    image = image_create(nRows,nCols);
+    
+    if(image == NULL){
+        printf("Can't create image!\n");
+        return CANT_CREATE_IMAGE;
+    }
+
+    image_load_data(image, filename);
+    image_print(image);
+    image_free(image);
+
+    return SUCCESS;
+}
+
+int convert(char const *filename, char const *outfile_name){
+    TImage *image;
+
+    int nRows=0, nCols=0;
+   
+    FILE *fp;
+    
+    open_file(&fp, filename);
+    
+    get_image_proportions(filename, &nCols, &nRows);
     
     image = image_create(nRows,nCols);
     
@@ -17,13 +42,12 @@ int open(const char *filename){
         printf("Can't create image!\n");
 
     image_load_data(image, filename);
-    image_print(image);
+    
+    write_file(image, outfile_name);
+    
     image_free(image);
-}
 
-int convert(char const *filename, char const *outfile_name){
-    printf("convert\n");
-    return 0;
+    return SUCCESS;
 }
 
 int segment(char const *thr, char const *filename, char const *outfile_name){

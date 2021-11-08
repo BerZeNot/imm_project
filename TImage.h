@@ -31,6 +31,9 @@ int image_threshold(TImage *image, int thr);
 // Abre um arquivo de texto ou binário de acordo com a extenção (.txt ou .imm)
 int open_file(FILE **fp, const char *filename);
 
+// Escreve os dados da imagem em um arquivo de saída
+int write_file(TImage *image, const char *outfile_name);
+
 // Fecha um arquivo
 int close_file(FILE **fp);
 

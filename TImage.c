@@ -129,6 +129,50 @@ int open_file(FILE **fp, const char *filename){
     }
 }
 
+int write_file(TImage *image, const char *outfile_name){
+    if(image == NULL)
+        return INVALID_NULL_POINTER;
+    
+    FILE *fp;
+
+    char filetype[3];
+    get_extention(outfile_name, strlen(outfile_name), filetype);
+
+    // Abre o arquivo para escrita em modo binário e escreve os dados
+    if(strcmp(filetype, "imm") == 0){
+        fp = fopen(outfile_name,"wb");
+        if(fp == NULL)
+            return CANT_OPEN_FILE;
+
+
+        int auxValue = image->nrows;
+        fwrite(&auxValue, sizeof(int), 1, fp);
+        auxValue = image->ncolumns;
+        fwrite(&auxValue, sizeof(int), 1, fp);
+
+        int pos=0;
+
+        for(int i = 0; i < image->nrows; i++){
+            for(int j=0; j < image->ncolumns; j++){
+                pos = j * image->nrows + i;
+                auxValue = image->data[pos];
+                fwrite(&auxValue, sizeof(int), 1, fp);
+            }
+        }
+        
+
+    }
+    // Abre o arquivo para escrita em modo texto e escreve os dados
+    else if(strcmp(filetype, "txt") == 0){
+        fp = fopen(outfile_name,"w");
+        if(fp == NULL)
+            return CANT_OPEN_FILE;
+    }
+
+    fclose(fp);
+    return SUCCESS;
+}
+
 int close_file(FILE **fp){
     if(fp == NULL)
         return INVALID_NULL_POINTER;
