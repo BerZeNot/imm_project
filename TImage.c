@@ -104,7 +104,7 @@ int image_load_data(TImage *image, const char *filename){
     return SUCCESS;
 }
 
-int image_threshold(TImage *image, int thr);
+int image_threshold(TImage *image, int thr)
 
 int open_file(FILE **fp, const char *filename){
     char file_extention[3];
@@ -167,6 +167,29 @@ int write_file(TImage *image, const char *outfile_name){
         fp = fopen(outfile_name,"w");
         if(fp == NULL)
             return CANT_OPEN_FILE;
+
+
+        int auxValue=0;
+
+        int pos=0;
+
+        for(int i = 0; i < image->nrows; i++){
+            for(int j=0; j < image->ncolumns; j++){
+                pos = j * image->nrows + i;
+                auxValue = image->data[pos];
+                // fwrite(&auxValue, sizeof(int), 1, fp);
+                if(auxValue < 10)
+                    fprintf(fp, "%d   ", auxValue);
+
+                else if(auxValue < 100)
+                    fprintf(fp, "%d  ", auxValue);
+                
+                else 
+                    fprintf(fp, "%d ", auxValue);
+            }
+            fprintf(fp, "%c", '\n');
+        }
+        
     }
 
     fclose(fp);
