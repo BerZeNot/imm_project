@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
-#include "TImage.h"
 #include "imm_resources.h"
+
+void getExtention(const char *fileName, int size, char *outVector);
 
 int main(int argc, char const *argv[]){
     if(argv[1] == NULL){
@@ -15,21 +16,23 @@ int main(int argc, char const *argv[]){
             printf("Inform the file name!\n");
             return MISSING_FILENAME;
         }
-        
-        char extention[3];
-        get_extention(argv[2], strlen(argv[2]), extention);
-        
-        if(strcmp(extention, "imm") == 0 || strcmp(extention, "txt") == 0){
-            int response;
-            response = open(argv[2]);
-            if(response == 0)
-                return response;
-        }
 
+        char extention[3];
+        getExtention(argv[2], strlen(argv[2]), extention);
+        
+        if(strcmp(extention, "imm") == 0)
+            openImm(argv[2]);
+
+        else if(strcmp(extention, "pgm") == 0)
+            openTxt(argv[2]);
+
+        else if(strcmp(extention, "txt") == 0)
+            openTxt(argv[2]);
+        
         else{
             printf("Format is not supported!\n");
-            printf("Try some file with extensions .txt or .imm.\n");
-            return UNSUPPORTED_FILE_FORMAT;
+            printf("Try some file with extensions .txt, .pgm or .imm.\n");
+            return FORMAT_NOT_SUPPORTED;
         }
     }
 

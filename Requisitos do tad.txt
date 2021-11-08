@@ -1,0 +1,10 @@
+Requisitos do tad
+
+OK  - Função para alocar memória para a imagem
+OK  - Função para liberar memória alocada
+OK  - Função para carregar os dados de um arquivo para o TAD imagem
+    - Função de salvar os dados da imagem em arquivo binário (prioridade)
+    - Função de salvar os dados da imagem em arquivo de texto (secundária)
+    - Função de Threshold 
+OK  - Função de mostrar a imagem na tela (txt)
+OK  - Função de mostrar a imagem na tela (imm - binária)
