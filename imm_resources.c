@@ -80,7 +80,32 @@ int segment(char const *thr, char const *filename, char const *outfile_name){
 }
 
 int connected_component(char const *filename, char const *outfile_name){
-    printf("connected_component\n");
+    TImage *image, *imageRot;
+
+    int nRows=0, nCols=0;
+   
+    get_image_proportions(filename, &nCols, &nRows);
+    
+    FILE *fp;
+
+    open_file(&fp, filename);
+
+    image = image_create(nRows,nCols);
+    imageRot = image_create(nRows,nCols);
+    
+    if(image == NULL)
+        printf("Can't create image!\n");
+
+    image_load_data(image, filename);
+    
+    close_file(&fp);
+    
+    image_initialize(imageRot);
+
+    image_connected_component(image, imageRot);
+
+    write_file(imageRot, outfile_name);
+
     return 0;
 }
 

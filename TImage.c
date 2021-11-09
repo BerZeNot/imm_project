@@ -1,4 +1,4 @@
-
+#include "TStackPoint.h"
 #include "TImage.h"
 
 struct TImage
@@ -37,10 +37,10 @@ int image_free(TImage *image){
 int image_print(TImage *image){
     if(image == NULL)
         return -1;
-
+    int pos=0;
     for(int i=0; i<image->nrows; i++){
         for(int j=0; j<image->ncolumns; j++){
-            int pos = j * image->nrows + i;
+            pos = j * image->nrows + i;
             int pixelData = image->data[pos];
             if(pixelData < 10)
                 printf("%d   ",pixelData);
@@ -122,6 +122,79 @@ int image_threshold(TImage *image, int thr){
     }
 
     return SUCCESS;
+}
+
+int image_connected_component(TImage *image, TImage *imageRot){
+    
+    int label = 1;
+    TStackPoint *next_list = stack_create();
+    Ponto p, current_p;
+
+    int pos;
+    for(int i=1; i<image->nrows-1; i++){
+        for(int j=1; j<image->ncolumns-1; j++){
+            p.x = i;
+            p.y = j;
+            pos = p.y * image->nrows + p.x;
+            if(image->data[pos]==1 && imageRot->data[pos] == 0){
+                imageRot->data[pos] = label;
+
+                stack_push(next_list,p);
+                while(!stack_empty){
+                    stack_top(next_list, &current_p);
+                    stack_pop(next_list);
+
+
+                    // ponto acima
+                    p.x = current_p.x - 1;
+                    p.y = current_p.y;
+                    pos = p.y * image->nrows + p.x;
+                    if(image->data[pos] == 1 && imageRot->data[pos] == 0){
+                        imageRot->data[pos] = label;
+                        stack_push(next_list, p);
+                    }
+                    // ponto abaixo
+                    p.x = current_p.x + 1;
+                    p.y = current_p.y;
+                    pos = p.y * image->nrows + p.x;
+                    if(image->data[pos] == 1 && imageRot->data[pos] == 0){
+                        imageRot->data[pos] = label;
+                        stack_push(next_list, p);
+                    }
+                    // ponto à esquerda
+                    p.x = current_p.x;
+                    p.y = current_p.y - 1;
+                    pos = p.y * image->nrows + p.x;
+                    if(image->data[pos] == 1 && imageRot->data[pos] == 0){
+                        imageRot->data[pos] = label;
+                        stack_push(next_list, p);
+                    }
+                    // ponto à direita 
+                    p.x = current_p.x;
+                    p.y = current_p.y - 1;
+                    pos = p.y * image->nrows + p.x;
+                    if(image->data[pos] == 1 && imageRot->data[pos] == 0){
+                        imageRot->data[pos] = label;
+                        stack_push(next_list, p);
+                    }
+                } // fim do while
+                label++;
+            } // fim do if
+        }
+    } // fim do for
+    
+    return SUCCESS;
+}
+
+int image_initialize(TImage *image){
+    if(image == NULL)
+        return INVALID_NULL_POINTER;
+    else{
+        for(int i=0; i<(image->ncolumns * image->nrows); i++){
+            image->data[i] = 0;
+        }
+        return SUCCESS;
+    }
 }
 
 int open_file(FILE **fp, const char *filename){

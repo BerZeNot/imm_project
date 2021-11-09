@@ -29,6 +29,11 @@ int image_load_data(TImage *image, const char *filename);
 // Faz o threshold da imagem
 int image_threshold(TImage *image, int thr);
 
+int image_connected_component(TImage *image, TImage *imageRot);
+
+// Inicializa a imagem com valor 0 em todos os pixels
+int image_initialize(TImage *image);
+
 // Abre um arquivo de texto ou binário de acordo com a extenção (.txt ou .imm)
 int open_file(FILE **fp, const char *filename);
 
@@ -43,3 +48,4 @@ void get_extention(const char *fileName, int size, char *outVector);
 
 // Obtem o número de colunas e linhas da imagem
 void get_image_proportions(const char *filename, int *nCols, int *nRows);
+
