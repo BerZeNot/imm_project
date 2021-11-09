@@ -51,8 +51,32 @@ int convert(char const *filename, char const *outfile_name){
 }
 
 int segment(char const *thr, char const *filename, char const *outfile_name){
-    printf("segment\n");
-    return 0;
+    TImage *image;
+
+    int nRows=0, nCols=0;
+   
+    get_image_proportions(filename, &nCols, &nRows);
+    
+    FILE *fp;
+
+    open_file(&fp, filename);
+
+    image = image_create(nRows,nCols);
+    
+    if(image == NULL)
+        printf("Can't create image!\n");
+
+    image_load_data(image, filename);
+
+    int thrInt = atoi(thr);
+
+    image_threshold(image, thrInt);
+
+    write_file(image, outfile_name);
+    
+    image_free(image);
+
+    return SUCCESS;
 }
 
 int connected_component(char const *filename, char const *outfile_name){
@@ -62,7 +86,7 @@ int connected_component(char const *filename, char const *outfile_name){
 
 int lab(char const *filename, char const *outfile_name){
     printf("connected_component\n");
-    return 0;
+    return 0;   
 }
 
 void help(){

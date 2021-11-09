@@ -104,7 +104,25 @@ int image_load_data(TImage *image, const char *filename){
     return SUCCESS;
 }
 
-int image_threshold(TImage *image, int thr)
+int image_threshold(TImage *image, int thr){
+    if(image == NULL)
+        return INVALID_NULL_POINTER;
+    
+    if(thr < 0 || thr > 255)
+        return INVALID_THR_VALUE;
+
+    int vectorSize = image->nrows*image->ncolumns;
+    for(int i = 0; i < vectorSize; i++){
+        if(image->data[i] >= thr){
+            image->data[i] = 1;   
+        }
+        else{
+            image->data[i] = 0;
+        }
+    }
+
+    return SUCCESS;
+}
 
 int open_file(FILE **fp, const char *filename){
     char file_extention[3];
@@ -216,7 +234,9 @@ void get_image_proportions(const char *filename, int *nCols, int *nRows){
     get_extention(filename, strlen(filename), file_extention);
 
     FILE *fp;
+    
     open_file(&fp, filename);
+    
 
     // Se for arquivo.txt a obtenção dos dados de largura e altura será feito assim
     if(strcmp(file_extention, "txt") == 0){
@@ -235,8 +255,11 @@ void get_image_proportions(const char *filename, int *nCols, int *nRows){
     } 
     // Se for arquivo.imm a obtenção dos dados de largura e altura será feito assim 
     else if(strcmp(file_extention, "imm")==0){
-        fread(nRows, sizeof(int), 1, fp);
-        fread(nCols, sizeof(int), 1, fp);
+        int rows=0, cols=0;
+        fread(&rows, sizeof(int), 1, fp);
+        fread(&cols, sizeof(int), 1, fp);
+        *nRows = rows;
+        *nCols = cols;
     }
 
     close_file(&fp);

@@ -8,6 +8,7 @@
 #define CANT_OPEN_FILE -3
 #define UNSUPPORTED_FILE_FORMAT -4
 #define MISSING_FILENAME -5
+#define INVALID_THR_VALUE -6
 
 
 typedef struct TImage TImage; 
